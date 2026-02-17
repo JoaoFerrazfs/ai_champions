@@ -16,8 +16,10 @@ class ProductController
 
     public function create(ProductRequest $request): Response
     {   
-        $result = $this->productService->create($request->all());
+        if($result = $this->productService->create($request->all())) {
+            return new JsonResponse($result, Response::HTTP_CREATED);
+        }
         
-        return new JsonResponse($result);
+        return new JsonResponse($result, Response::HTTP_BAD_REQUEST);
     }
 }

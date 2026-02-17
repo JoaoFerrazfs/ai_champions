@@ -4,7 +4,6 @@ namespace Catalog\Application\Products\Service;
 
 use Catalog\Domain\Products\Contracts\ProductRepositoryInterface;
 use Catalog\Domain\Products\Entities\ProductEntity;
-use DateTimeImmutable;
 
 class ProductService
 {
@@ -12,7 +11,7 @@ class ProductService
     {
     }
 
-    public function create(array $data): ProductEntity
+    public function create(array $data): ?ProductEntity
     {
         $price = is_numeric($data['price']) ? (float) $data['price'] : 0.0;
 
