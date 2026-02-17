@@ -6,5 +6,5 @@ use Catalog\Domain\Products\Entities\ProductEntity;
 
 interface ProductRepositoryInterface
 {
-    public function create(ProductEntity $product): ProductEntity;
+    public function create(ProductEntity $product): ?ProductEntity;
 }

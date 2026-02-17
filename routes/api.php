@@ -17,3 +17,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+$catalogRoutes = base_path('catalog/Routes/api.php');
+if (file_exists($catalogRoutes)) {
+    require $catalogRoutes;
+}

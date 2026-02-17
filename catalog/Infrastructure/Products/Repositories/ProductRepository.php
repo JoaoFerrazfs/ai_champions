@@ -14,18 +14,19 @@ class ProductRepository implements ProductRepositoryInterface
         private readonly Container $container
     ) {}
 
-    public function create(ProductEntity $product): ProductEntity
+    public function create(ProductEntity $product): ?ProductEntity
     {
 
         $model = $this->model();
 
-        // Map only the expected attributes explicitly
         $model->name = $product->name;
         $model->description = $product->description;
         $model->price = $product->price;
 
-        $r = $model->save();
-        dump($r);
+        if(!$result = $model->save()){
+            return null;
+        }
+
         return new ProductEntity(
             $model->name,
             $model->description,

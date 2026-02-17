@@ -10,13 +10,12 @@ class ProductEntity
 
 
     public function __construct(
-    public readonly string $name,
-    public readonly string $description,
-    public readonly float $price,
-    public readonly DateTimeImmutable $createdAt,
-    public readonly DateTimeImmutable $updatedAt,
-    public readonly ?string $id = null,
-
+        public readonly string $name,
+        public readonly string $description,
+        public readonly float $price,
+        public readonly ?DateTimeImmutable $createdAt = null,
+        public readonly ?DateTimeImmutable $updatedAt = null,
+        public readonly ?string $id = null,
     ){
     }
 }
