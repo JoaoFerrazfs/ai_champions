@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+echo "Criando diretórios e arquivo SQLite..."
+mkdir -p database
+if [ ! -f database/database.sqlite ]; then
+  touch database/database.sqlite
+  echo "Arquivo database/database.sqlite criado."
+fi
+
+echo "Instalando dependências (composer)..."
+docker compose run --rm composer install || true
+
+echo "Ajustando permissões..."
+docker compose run --rm --entrypoint "bash -lc 'chown -R www-data:www-data storage bootstrap/cache || true'" app || true
+
+echo "Gerando APP_KEY (se necessário)..."
+docker compose run --rm --entrypoint "bash -lc 'php artisan key:generate || true'" app || true
+
+echo "Executando migrations (se houver)..."
+docker compose run --rm --entrypoint "bash -lc 'php artisan migrate --force || true'" app || true
+
+echo "Setup finalizado. Rode 'docker compose up --build -d' para iniciar a aplicação."
