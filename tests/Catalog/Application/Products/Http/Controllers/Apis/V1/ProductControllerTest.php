@@ -60,4 +60,64 @@ class ProductControllerTest extends TestCase
         // Assertions
         $this->assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
     }
+
+    public function testIndexReturns200AndTransformedItemsWithPageParam()
+    {
+        // Set
+        $page = 2;
+        $entity = new ProductEntity('P','D',10.0,new \DateTimeImmutable('2026-01-01 10:00:00'), new \DateTimeImmutable('2026-01-01 11:00:00'), 'id-1');
+        $service = Mockery::mock(ProductService::class);
+        $request = new \Illuminate\Http\Request(['page' => $page]);
+        $controller = new ProductController($service);
+
+        $expectedMeta = ['page' => $page, 'per_page' => 15, 'total' => 1];
+
+        // Expectations
+        $service->expects()
+            ->paginate($page)
+            ->andReturn(['items' => [$entity], 'meta' => $expectedMeta]);
+
+        // Actions
+        $response = $controller->index($request);
+
+        // Assertions
+        $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
+        $content = json_decode($response->getContent(), true);
+        $this->assertArrayHasKey('data', $content);
+        $this->assertArrayHasKey('meta', $content);
+        $this->assertSame($expectedMeta, $content['meta']);
+        $this->assertSame(
+            \Catalog\Application\Products\Http\Resources\ProductResource::toArray($entity),
+            $content['data'][0]
+        );
+    }
+
+    public function testIndexReturns200AndUsesDefaultPageWhenNotProvided()
+    {
+        // Set
+        $defaultPage = 1;
+        $entity = new ProductEntity('X','Y',5.5,null,null,'id-2');
+        $service = Mockery::mock(ProductService::class);
+        $request = new \Illuminate\Http\Request();
+        $controller = new ProductController($service);
+
+        $expectedMeta = ['page' => $defaultPage, 'per_page' => 15, 'total' => 1];
+
+        // Expectations
+        $service->expects()
+            ->paginate($defaultPage)
+            ->andReturn(['items' => [$entity], 'meta' => $expectedMeta]);
+
+        // Actions
+        $response = $controller->index($request);
+
+        // Assertions
+        $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
+        $content = json_decode($response->getContent(), true);
+        $this->assertSame($expectedMeta, $content['meta']);
+        $this->assertSame(
+            \Catalog\Application\Products\Http\Resources\ProductResource::toArray($entity),
+            $content['data'][0]
+        );
+    }
 }
