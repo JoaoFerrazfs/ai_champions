@@ -23,4 +23,10 @@ class ProductService
 
         return $this->productRepository->create(product: $product);
     }
+
+    public function paginate(int $page = 1): array
+    {
+        $perPage = 10;
+        return $this->productRepository->paginate($perPage, $page);
+    }
 }
